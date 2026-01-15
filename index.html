@@ -1,128 +1,213 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Flashcard Quiz App</title>
-
+  <title>Flashcard Quiz App - 7th Grade</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
     body {
-      font-family: Arial;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 20px;
       text-align: center;
-      background-color: #f2f2f2;
-      padding: 40px;
+      background: linear-gradient(135deg, #89f7fe, #66a6ff);
+      min-height: 100vh;
     }
 
     h2 {
+      color: #fff;
+      font-size: 32px;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    }
+
+    #card-container {
+      perspective: 1000px;
+      margin: 0 auto 20px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .flashcard {
+      background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+      color: #fff;
+      padding: 30px 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      min-height: 120px;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+      position: relative;
+    }
+
+    .flashcard.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard .front, .flashcard .back {
+      position: absolute;
+      width: 100%;
+      backface-visibility: hidden;
+    }
+
+    .flashcard .back {
+      transform: rotateY(180deg);
       color: #333;
-    }
-
-    p {
-      font-size: 20px;
-      margin: 15px;
-    }
-
-    input {
-      padding: 8px;
-      width: 250px;
-      margin: 5px;
-      font-size: 16px;
+      background: #fff;
+      font-weight: bold;
+      border-radius: 20px;
     }
 
     button {
-      padding: 10px 15px;
+      background: #ff6f61;
+      color: #fff;
+      border: none;
+      padding: 12px 22px;
       margin: 5px;
       font-size: 16px;
+      border-radius: 10px;
       cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
     }
+
+    button:hover {
+      transform: scale(1.05);
+      background: #ff3b2e;
+    }
+
+    input {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 10px;
+      border: none;
+      width: 250px;
+      font-size: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    input:focus {
+      transform: scale(1.02);
+      outline: none;
+    }
+
+    #input-container {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 450px) {
+      .flashcard {
+        font-size: 20px;
+        padding: 20px 15px;
+      }
+      input {
+        width: 80%;
+      }
+    }
+
   </style>
 </head>
-
 <body>
 
-  <h2>My Flashcard App</h2>
+  <h2>Flashcard Quiz App - 7th Grade</h2>
 
-  <p id="question"></p>
+  <div id="card-container">
+    <div class="flashcard" onclick="flipCard()">
+      <div class="front" id="question">Question</div>
+      <div class="back" id="answer">Answer</div>
+    </div>
+  </div>
 
-  <button onclick="showAnswer()">Show Answer</button>
-
-  <p id="answer"></p>
-
+  <!-- Navigation -->
   <button onclick="prevCard()">Previous</button>
   <button onclick="nextCard()">Next</button>
 
-  <br><br>
-
-  <input id="newQuestion" placeholder="Type question here">
-  <br>
-  <input id="newAnswer" placeholder="Type answer here">
-
-  <br><br>
-
-  <button onclick="addCard()">Add Flashcard</button>
-  <button onclick="deleteCard()">Delete Flashcard</button>
+  <!-- Input -->
+  <div id="input-container">
+    <input id="newQuestion" placeholder="Type question here">
+    <br>
+    <input id="newAnswer" placeholder="Type answer here">
+    <br><br>
+    <button onclick="addCard()">Add Flashcard</button>
+    <button onclick="deleteCard()">Delete Flashcard</button>
+  </div>
 
   <script>
+    // Preloaded 7th-grade questions
     let cards = [
-      { q: "What is 2 + 2?", a: "4" },
-      { q: "What color is the sky?", a: "Blue" },
-      { q: "How many days are there in a week?", a: "7" }
+      { q: "What is the capital of France?", a: "Paris" },
+      { q: "Who wrote 'Romeo and Juliet'?", a: "William Shakespeare" },
+      { q: "What is H2O commonly known as?", a: "Water" },
+      { q: "What is 12 × 8?", a: "96" },
+      { q: "Which planet is known as the Red Planet?", a: "Mars" },
+      { q: "What is the square root of 144?", a: "12" },
+      { q: "What gas do plants absorb from the air?", a: "Carbon dioxide" },
+      { q: "Who discovered gravity?", a: "Isaac Newton" },
+      { q: "What is the longest river in the world?", a: "Nile River" },
+      { q: "What is the process of water cycle called?", a: "Evaporation, Condensation, Precipitation" }
     ];
 
     let index = 0;
 
+    const flashcard = document.querySelector('.flashcard');
+    const questionEl = document.getElementById('question');
+    const answerEl = document.getElementById('answer');
+
     function showCard() {
       if (cards.length === 0) {
-        document.getElementById("question").innerText = "No flashcards available";
-        document.getElementById("answer").innerText = "";
+        questionEl.innerText = "No flashcards available";
+        answerEl.innerText = "";
         return;
       }
-      document.getElementById("question").innerText = cards[index].q;
-      document.getElementById("answer").innerText = "";
+      questionEl.innerText = cards[index].q;
+      answerEl.innerText = cards[index].a;
+      flashcard.classList.remove('flipped');
     }
 
-    function showAnswer() {
-      document.getElementById("answer").innerText =
-        "Answer: " + cards[index].a;
+    function flipCard() {
+      flashcard.classList.toggle('flipped');
     }
 
     function nextCard() {
-      if (index < cards.length - 1) {
-        index++;
-        showCard();
-      }
+      if (index < cards.length - 1) index++;
+      showCard();
     }
 
     function prevCard() {
-      if (index > 0) {
-        index--;
-        showCard();
-      }
+      if (index > 0) index--;
+      showCard();
     }
 
     function addCard() {
       let q = document.getElementById("newQuestion").value;
       let a = document.getElementById("newAnswer").value;
 
-      if (q === "" || a === "") {
-        alert("Please type question and answer");
+      if (!q || !a) {
+        alert("Please type both question and answer!");
         return;
       }
 
-      cards.push({ q: q, a: a });
+      cards.push({ q, a });
       index = cards.length - 1;
       showCard();
-
       document.getElementById("newQuestion").value = "";
       document.getElementById("newAnswer").value = "";
     }
 
     function deleteCard() {
       if (cards.length === 0) return;
-
       cards.splice(index, 1);
       if (index > 0) index--;
       showCard();
     }
 
+    // Initialize
     showCard();
   </script>
 
