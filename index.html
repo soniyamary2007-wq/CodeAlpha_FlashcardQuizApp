@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Flashcard Quiz App</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background-color: #f2f2f2;
+      padding: 40px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    p {
+      font-size: 20px;
+      margin: 15px;
+    }
+
+    input {
+      padding: 8px;
+      width: 250px;
+      margin: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>My Flashcard App</h2>
+
+  <p id="question"></p>
+
+  <button onclick="showAnswer()">Show Answer</button>
+
+  <p id="answer"></p>
+
+  <button onclick="prevCard()">Previous</button>
+  <button onclick="nextCard()">Next</button>
+
+  <br><br>
+
+  <input id="newQuestion" placeholder="Type question here">
+  <br>
+  <input id="newAnswer" placeholder="Type answer here">
+
+  <br><br>
+
+  <button onclick="addCard()">Add Flashcard</button>
+  <button onclick="deleteCard()">Delete Flashcard</button>
+
+  <script>
+    let cards = [
+      { q: "What is 2 + 2?", a: "4" },
+      { q: "What color is the sky?", a: "Blue" },
+      { q: "How many days are there in a week?", a: "7" }
+    ];
+
+    let index = 0;
+
+    function showCard() {
+      if (cards.length === 0) {
+        document.getElementById("question").innerText = "No flashcards available";
+        document.getElementById("answer").innerText = "";
+        return;
+      }
+      document.getElementById("question").innerText = cards[index].q;
+      document.getElementById("answer").innerText = "";
+    }
+
+    function showAnswer() {
+      document.getElementById("answer").innerText =
+        "Answer: " + cards[index].a;
+    }
+
+    function nextCard() {
+      if (index < cards.length - 1) {
+        index++;
+        showCard();
+      }
+    }
+
+    function prevCard() {
+      if (index > 0) {
+        index--;
+        showCard();
+      }
+    }
+
+    function addCard() {
+      let q = document.getElementById("newQuestion").value;
+      let a = document.getElementById("newAnswer").value;
+
+      if (q === "" || a === "") {
+        alert("Please type question and answer");
+        return;
+      }
+
+      cards.push({ q: q, a: a });
+      index = cards.length - 1;
+      showCard();
+
+      document.getElementById("newQuestion").value = "";
+      document.getElementById("newAnswer").value = "";
+    }
+
+    function deleteCard() {
+      if (cards.length === 0) return;
+
+      cards.splice(index, 1);
+      if (index > 0) index--;
+      showCard();
+    }
+
+    showCard();
+  </script>
+
+</body>
+</html>
